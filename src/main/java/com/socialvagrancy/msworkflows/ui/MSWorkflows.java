@@ -19,6 +19,7 @@ public class MSWorkflows
 			{
 				case "send-email":
 					System.err.println("Sending email...");
+					controller.sendEmail(aparser.get("template"));
 					break;
 				default:
 					System.err.println("Invalid command selected [" + aparser.get("command") + "]. Please use -h/--help to see a list of valid commands.");

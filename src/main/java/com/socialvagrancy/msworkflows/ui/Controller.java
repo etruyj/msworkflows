@@ -9,6 +9,7 @@
 
 package com.socialvagrancy.msworkflows.ui;
 
+import com.socialvagrancy.msworkflows.command.TemplateEmail;
 import com.socialvagrancy.msworkflows.util.graph.Graph;
 import com.socialvagrancy.utils.Logger;
 
@@ -20,6 +21,7 @@ import java.util.Properties;
 public class Controller
 {
 	private Logger log;
+	private Graph graph;
 
 	public Controller(String log_location, int log_level, int log_size, int log_count, String authentication_file) throws Exception
 	{
@@ -28,6 +30,8 @@ public class Controller
 		log.debug("Properties file: " + authentication_file);
 
 		final Properties oAuthProperties = new Properties();
+		graph = new Graph();
+		
 		try
 		{
 			oAuthProperties.load(new FileInputStream("../resources/" + authentication_file));
@@ -40,7 +44,7 @@ public class Controller
 
 		try
 		{
-			Graph.initializeGraphForUserAuth(oAuthProperties,
+			graph.initializeGraphForUserAuth(oAuthProperties,
 					challenge -> System.out.println(challenge.getMessage()));
 		}
 		catch(Exception e)
@@ -53,4 +57,16 @@ public class Controller
 		log.debug("Successfully connected to MS Graph");
 	}
 
+	public void sendEmail(String template_path)
+	{
+		try
+		{
+			TemplateEmail.loadAndSend(template_path, graph, log);
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage());
+			System.err.println(e.getMessage());
+		}
+	}
 }

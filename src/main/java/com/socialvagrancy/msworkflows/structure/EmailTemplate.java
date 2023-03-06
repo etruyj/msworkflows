@@ -39,6 +39,7 @@ public class EmailTemplate
 	public String body() { return body; }
 	public ArrayList<String> attachments() { return attachments; }
 	public ArrayList<String> variables() { return variables; }
+	public int toRecipientCount() { return to_recipient.size(); }
 
 	//=======================================
 	// Setters
@@ -49,7 +50,11 @@ public class EmailTemplate
 	public void addCcRecipient(String email) { cc_recipient.add(email); }
 	public void addBccRecipient(String email) { bcc_recipient.add(email); }
 	public void addVariable(String v) { variables.add(v); }
-	public void setSubject(String s) { subject = s; }
 	public void setBody(String b) { body = b; }
-
+	public void setSubject(String s) { subject = s; }
+	public void setToRecipient(int index, String email) 
+	{ 
+		to_recipient.remove(index);
+		to_recipient.add(email);
+	}
 }

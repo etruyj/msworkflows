@@ -41,11 +41,11 @@ import okhttp3.Request;
 
 public class Graph {
     // <UserAuthConfigSnippet>
-    private static Properties _properties;
-    private static DeviceCodeCredential _deviceCodeCredential;
-    private static GraphServiceClient<Request> _userClient;
+    private Properties _properties;
+    private DeviceCodeCredential _deviceCodeCredential;
+    private GraphServiceClient<Request> _userClient;
 
-    public static void initializeGraphForUserAuth(Properties properties, Consumer<DeviceCodeInfo> challenge) throws Exception {
+    public void initializeGraphForUserAuth(Properties properties, Consumer<DeviceCodeInfo> challenge) throws Exception {
         // Ensure properties isn't null
         if (properties == null) {
             throw new Exception("Properties cannot be null");
@@ -73,12 +73,12 @@ public class Graph {
             .authenticationProvider(authProvider)
             .buildClient();
 
-	final User me = _userClient.me().buildRequest().get();
+	User me = _userClient.me().buildRequest().get();
     }
     // </UserAuthConfigSnippet>
 
     // <GetUserTokenSnippet>
-    public static String getUserToken() throws Exception {
+    public String getUserToken() throws Exception {
         // Ensure credential isn't null
         if (_deviceCodeCredential == null) {
             throw new Exception("Graph has not been initialized for user auth");
@@ -95,7 +95,7 @@ public class Graph {
     // </GetUserTokenSnippet>
 
     // <GetUserSnippet>
-    public static User getUser() throws Exception {
+    public User getUser() throws Exception {
         // Ensure client isn't null
         if (_userClient == null) {
             throw new Exception("Graph has not been initialized for user auth");
@@ -108,7 +108,7 @@ public class Graph {
     }
     // </GetUserSnippet>
 
-	public static void getEvents() throws Exception {
+	public void getEvents() throws Exception {
 		if(_userClient == null)
 		{
 			throw new Exception("Graph has not been initialized for user auth");
@@ -122,7 +122,7 @@ public class Graph {
 	}
 
     // <GetInboxSnippet>
-    public static MessageCollectionPage getInbox() throws Exception {
+    public MessageCollectionPage getInbox() throws Exception {
         // Ensure client isn't null
         if (_userClient == null) {
             throw new Exception("Graph has not been initialized for user auth");
@@ -140,7 +140,7 @@ public class Graph {
     // </GetInboxSnippet>
 
     // <SendMailSnippet>
-    public static void sendMail(String subject, String body, String recipient) throws Exception {
+    public void sendMail(String subject, String body, String recipient) throws Exception {
         // Ensure client isn't null
         if (_userClient == null) {
             throw new Exception("Graph has not been initialized for user auth");
@@ -169,10 +169,10 @@ public class Graph {
     // </SendMailSnippet>
 
     // <AppOnyAuthConfigSnippet>
-    private static ClientSecretCredential _clientSecretCredential;
-    private static GraphServiceClient<Request> _appClient;
+    private ClientSecretCredential _clientSecretCredential;
+    private GraphServiceClient<Request> _appClient;
 
-    private static void ensureGraphForAppOnlyAuth() throws Exception {
+    private void ensureGraphForAppOnlyAuth() throws Exception {
         // Ensure _properties isn't null
         if (_properties == null) {
             throw new Exception("Properties cannot be null");
@@ -203,7 +203,7 @@ public class Graph {
     // </AppOnyAuthConfigSnippet>
 
     // <GetUsersSnippet>
-    public static UserCollectionPage getUsers() throws Exception {
+    public UserCollectionPage getUsers() throws Exception {
         ensureGraphForAppOnlyAuth();
 
         return _appClient.users()
@@ -216,11 +216,12 @@ public class Graph {
     // </GetUsersSnippet>
 
     // <MakeGraphCallSnippet>
-    public static void makeGraphCall() {
+    public void makeGraphCall() {
         // INSERT YOUR CODE HERE
         // Note: if using _appClient, be sure to call ensureGraphForAppOnlyAuth
         // before using it.
         // ensureGraphForAppOnlyAuth();
     }
     // </MakeGraphCallSnippet>
+
 }
