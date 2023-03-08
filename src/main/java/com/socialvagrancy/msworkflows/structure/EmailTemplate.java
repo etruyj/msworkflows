@@ -52,9 +52,12 @@ public class EmailTemplate
 	public void addVariable(String v) { variables.add(v); }
 	public void setBody(String b) { body = b; }
 	public void setSubject(String s) { subject = s; }
-	public void setToRecipient(int index, String email) 
+	public void setToRecipients(ArrayList<String> r) { to_recipient = r; }
+	public void setCcRecipients(ArrayList<String> r) { cc_recipient = r; }
+	public void setBccRecipients(ArrayList<String> r) { bcc_recipient = r; }
+	public void updateToRecipient(int index, String email) 
 	{ 
 		to_recipient.remove(index);
-		to_recipient.add(email);
+		to_recipient.add(index, email);
 	}
 }

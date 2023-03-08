@@ -10,6 +10,7 @@
 package com.socialvagrancy.msworkflows.ui;
 
 import com.socialvagrancy.msworkflows.command.TemplateEmail;
+import com.socialvagrancy.msworkflows.command.TemplateMeeting;
 import com.socialvagrancy.msworkflows.util.graph.Graph;
 import com.socialvagrancy.utils.Logger;
 
@@ -55,6 +56,19 @@ public class Controller
 		}
 
 		log.debug("Successfully connected to MS Graph");
+	}
+
+	public void createMeeting(String template_path)
+	{
+		try
+		{
+			TemplateMeeting.loadAndSend(template_path, graph, log);
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage());
+			System.err.println(e.getMessage());
+		}
 	}
 
 	public void sendEmail(String template_path)

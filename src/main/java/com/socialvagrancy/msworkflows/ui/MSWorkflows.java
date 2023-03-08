@@ -17,8 +17,12 @@ public class MSWorkflows
 
 			switch(aparser.get("command"))
 			{
+				case "create-meeting":
+					System.out.println("Creating meeting...");
+					controller.createMeeting(aparser.get("template"));
+					break;
 				case "send-email":
-					System.err.println("Sending email...");
+					System.out.println("Sending email...");
 					controller.sendEmail(aparser.get("template"));
 					break;
 				default:

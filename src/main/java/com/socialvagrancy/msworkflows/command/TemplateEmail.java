@@ -56,14 +56,14 @@ public class TemplateEmail
 
 		HashMap<String, String> var_map = userInputVariables(email.variables());
 
-		System.err.println("to: " + email.toRecipientCount());
-		//email.setToRecipient(0, replaceVariables(email.toRecipients().get(0), var_map));
-
+		email.setToRecipients(replaceEmailAddresses(email.toRecipients(), var_map));
+		email.setCcRecipients(replaceEmailAddresses(email.ccRecipients(), var_map));
+		email.setBccRecipients(replaceEmailAddresses(email.bccRecipients(), var_map));
 		email.setBody(replaceVariables(email.body(), var_map));
 
 		if(email != null)
 		{
-			graph.sendMail(email.subject(), email.body(), replaceEmailAddresses(email.toRecipients(), var_map));
+			graph.sendEmail(email.subject(), email.body(), email.toRecipients(), email.ccRecipients(), email.bccRecipients());
 	
 		}
 	}
@@ -72,19 +72,18 @@ public class TemplateEmail
 	// Private Functions
 	//=======================================
 	
-	private static String replaceEmailAddresses(ArrayList<String> address_list, HashMap<String, String> var_map)
+	private static ArrayList<String> replaceEmailAddresses(ArrayList<String> address_list, HashMap<String, String> var_map)
 	{
 		// Build out the email list and replace them with variables.
 
-		StringBuilder email_addresses = new StringBuilder();
+		ArrayList<String> email_list = new ArrayList<String>();
 
 		for(int i=0; i<address_list.size(); i++)
 		{
-			email_addresses.append(address_list.get(i)).append("; ");
+			email_list.add(var_map.get(address_list.get(i).substring(1, address_list.get(i).length()-1)));
 		}
 
-		return replaceVariables(email_addresses.substring(0, email_addresses.length()-2).toString(), var_map);
-
+		return email_list;
 	}
 
 	private static String replaceVariables(String text, HashMap<String, String> var_map)
