@@ -14,18 +14,27 @@ Required: socialvagrancy.utils version 1.8.0 - can be downloaded from github and
 Templates are JSON objects that hold the basic format for the email.
 
 ### Email Fields
-subject: String
-to_recipient: Array<String>
-body: String
+subject: String 
+
+to_recipient: Array<String> 
+  
+body: String 
+  
 variables: Array<String>
 
 ### Meeting Fields
-subject: String
-body: String
-start_time: String
-end_time: String
-meeting_room: String
-attendees: Array<String>
+subject: String 
+  
+body: String 
+  
+start_time: String 
+  
+end_time: String 
+  
+meeting_room: String 
+  
+attendees: Array<String> 
+  
 variables: Array<String>
 
 ### Variables
