@@ -7,6 +7,7 @@ Required: socialvagrancy.utils version 1.8.0 - can be downloaded from github and
 
 ## Arguments:
 --command: The task to be performed [ create-meeting | send-email ] 
+
 --template: What template to use for the email/meeting.
 
 ## Templates:
