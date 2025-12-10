@@ -79,6 +79,6 @@ public class O365Controller {
 	}
 
 	public void sendEmail(String template_path) throws Exception {
-	    SendEmail.loadTemplateAndSend(template_path, graph);
+	    SendEmail.fromTemplateWithPrompts(template_path, graph);
 	}
 }

@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
 public class SendEmail {
     private static final Logger log = LoggerFactory.getLogger(SendEmail.class);
 
-	public static void loadTemplateAndSend(String template_path, Graph graph) throws Exception
-	{
+	public static void fromTemplateWithPrompts(String template_path, Graph graph) throws Exception {
 		log.info("Composing email based on template: " + template_path);
 
 		Gson gson = new Gson();
