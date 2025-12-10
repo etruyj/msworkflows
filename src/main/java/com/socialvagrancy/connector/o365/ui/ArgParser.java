@@ -4,7 +4,7 @@
 // 		Handles argument parsing for CLI tasks.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.ui;
+package com.socialvagrancy.connector.o365.ui;
 
 import java.util.HashMap;
 

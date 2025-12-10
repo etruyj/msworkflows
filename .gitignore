@@ -1,0 +1,27 @@
+# Claude Code documentation
+CLAUDE.md
+
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Configuration files with secrets
+src/main/resources/msworkflows/oAuth.properties
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

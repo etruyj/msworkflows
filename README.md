@@ -1,9 +1,25 @@
 # msworkflows
 This is a really simple interface to test interaction with MS Graph. The plan is to integrate it with other scripts to automate email and meeting invitations. As this is a simple POC at this point, a scanner is used to take input.
 
-MainClass: com.socialvagrancy.msworkflows.ui.MSWorkflows
+MainClass: com.socialvagrancy.connector.o365.ui.MSWorkflows
 
 Required: socialvagrancy.utils version 1.8.0 - can be downloaded from github and installed into Maven.
+
+## Configuration
+
+Before running the application, you need to configure OAuth authentication:
+
+1. Copy the example configuration file:
+   ```bash
+   cp src/main/resources/msworkflows/oAuth.properties.example src/main/resources/msworkflows/oAuth.properties
+   ```
+
+2. Edit `oAuth.properties` and fill in your Azure AD application details:
+   - `app.clientId` - Your Azure AD application client ID (required)
+   - `app.authTenant` - Your Azure AD tenant ID for authentication (required)
+   - `app.clientSecret` - Client secret (only if using app-only authentication)
+   - `app.tenantId` - Tenant ID (only if using app-only authentication)
+   - `app.graphUserScopes` - Comma-separated list of Microsoft Graph scopes
 
 ## Arguments:
 --command: The task to be performed [ create-meeting | send-email ] 

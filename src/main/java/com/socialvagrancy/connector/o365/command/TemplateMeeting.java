@@ -5,11 +5,11 @@
 // 		invite.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.command;
+package com.socialvagrancy.connector.o365.command;
 
-import com.socialvagrancy.msworkflows.structure.MeetingTemplate;
-import com.socialvagrancy.msworkflows.util.ReplaceVariables;
-import com.socialvagrancy.msworkflows.util.graph.Graph;
+import com.socialvagrancy.connector.o365.model.MeetingTemplateModel;
+import com.socialvagrancy.connector.o365.util.ReplaceVariables;
+import com.socialvagrancy.connector.o365.util.graph.Graph;
 import com.socialvagrancy.utils.FileManager;
 import com.socialvagrancy.utils.Logger;
 
@@ -27,7 +27,7 @@ public class TemplateMeeting
 		log.info("Building meeting invitation from template: " + template);
 
 		Gson gson = new Gson();
-		MeetingTemplate meeting;
+		MeetingTemplateModel meeting;
 		String meeting_json;
 
 		try
@@ -42,7 +42,7 @@ public class TemplateMeeting
 
 		try
 		{
-			meeting = gson.fromJson(meeting_json, MeetingTemplate.class);
+			meeting = gson.fromJson(meeting_json, MeetingTemplateModel.class);
 		}
 		catch(JsonParseException e)
 		{

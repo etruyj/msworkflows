@@ -1,11 +1,11 @@
 //===================================================================
-// MeetingTemplate.java
+// MeetingTemplateModel.java
 // 	Description:
 // 		This email holds the structure for a meeting
 // 		invitation.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.structure;
+package com.socialvagrancy.connector.o365.model;
 
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -13,7 +13,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MeetingTemplate
+public class MeetingTemplateModel
 {
 	private String subject;
 	private String body;
@@ -24,7 +24,7 @@ public class MeetingTemplate
 	private ArrayList<String> attendees;
 	private ArrayList<String> variables;
 
-	public MeetingTemplate()
+	public MeetingTemplateModel()
 	{
 		attendees = new ArrayList<String>();
 	}

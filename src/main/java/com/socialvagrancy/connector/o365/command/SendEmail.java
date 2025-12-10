@@ -1,18 +1,19 @@
 //===================================================================
-// TemplateEmail.java
+// SendEmail.java
 // 	Description:
 // 		This command sends a form email in the form of a
 // 		template. This script will load an email template
 // 		parse for required variables and then send the email
 // 		to the targeted users.
+//
+// Created by etruyj
 //===================================================================
 
-package com.socialvagrancy.msworkflows.command;
+package com.socialvagrancy.connector.o365.command;
 
-import com.socialvagrancy.msworkflows.structure.EmailTemplate;
-import com.socialvagrancy.msworkflows.util.graph.Graph;
-import com.socialvagrancy.utils.FileManager;
-import com.socialvagrancy.utils.Logger;
+import com.socialvagrancy.connector.o365.model.EmailTemplateModel;
+import com.socialvagrancy.connector.o365.util.graph.Graph;
+import com.socialvagrancy.utils.io.FileManager;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -22,37 +23,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class TemplateEmail
-{
-	public static void loadAndSend(String template_path, Graph graph, Logger log) throws Exception
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SendEmail {
+    private static final Logger log = LoggerFactory.getLogger(SendEmail.class);
+
+	public static void loadTemplateAndSend(String template_path, Graph graph) throws Exception
 	{
 		log.info("Composing email based on template: " + template_path);
 
 		Gson gson = new Gson();
 		String template;
-		EmailTemplate email;
+		EmailTemplateModel email;
 
-		try
-		{
-			template = FileManager.readFile(template_path);
-		}
-		catch(Exception e)
-		{
-			log.error(e.getMessage());
-			throw new Exception("Unable to read template file.");
-		}
+	    template = FileManager.readFile(template_path);
 
-		try
-		{
-			email = gson.fromJson(template, EmailTemplate.class);
+		email = gson.fromJson(template, EmailTemplateModel.class);
 
-			System.err.println("subject: " + email.subject());
-		}
-		catch(JsonParseException e)
-		{
-			log.error(e.getMessage());
-			throw new Exception("Unable to parse template file.");
-		}
+		System.err.println("subject: " + email.subject());
 
 		HashMap<String, String> var_map = userInputVariables(email.variables());
 

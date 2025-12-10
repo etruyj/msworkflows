@@ -1,15 +1,15 @@
 //===================================================================
-// EmailTemplate.java
+// EmailTemplateModel.java
 // 	Description:
-// 		This variable holds the email template information 
+// 		This variable holds the email template information
 // 		to send an email.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.structure;
+package com.socialvagrancy.connector.o365.model;
 
 import java.util.ArrayList;
 
-public class EmailTemplate
+public class EmailTemplateModel
 {
 	ArrayList<String> to_recipient;
 	ArrayList<String> cc_recipient;
@@ -19,7 +19,7 @@ public class EmailTemplate
 	ArrayList<String> attachments;
 	ArrayList<String> variables;
 
-	public EmailTemplate()
+	public EmailTemplateModel()
 	{
 		to_recipient = new ArrayList<String>();
 		cc_recipient = new ArrayList<String>();

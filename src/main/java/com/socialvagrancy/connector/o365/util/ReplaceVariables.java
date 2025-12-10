@@ -5,7 +5,7 @@
 //		with the proper values.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.util;
+package com.socialvagrancy.connector.o365.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

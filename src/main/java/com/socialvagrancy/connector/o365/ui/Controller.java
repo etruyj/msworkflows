@@ -7,11 +7,11 @@
 // 		functions via function calls.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.ui;
+package com.socialvagrancy.connector.o365.ui;
 
-import com.socialvagrancy.msworkflows.command.TemplateEmail;
-import com.socialvagrancy.msworkflows.command.TemplateMeeting;
-import com.socialvagrancy.msworkflows.util.graph.Graph;
+import com.socialvagrancy.connector.o365.command.TemplateEmail;
+import com.socialvagrancy.connector.o365.command.TemplateMeeting;
+import com.socialvagrancy.connector.o365.util.graph.Graph;
 import com.socialvagrancy.utils.Logger;
 
 import java.io.FileInputStream;
@@ -56,6 +56,22 @@ public class Controller
 		}
 
 		log.debug("Successfully connected to MS Graph");
+	}
+
+	//=======================================
+	// Commands
+	//=======================================
+
+	public void checkAvailability(String email)
+	{
+		try
+		{
+		}
+		catch(Exception e)
+		{
+			log.error(e.getMessage());
+			System.err.println(e.getMessage());
+		}
 	}
 
 	public void createMeeting(String template_path)

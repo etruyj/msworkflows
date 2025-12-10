@@ -1,0 +1,5 @@
+app.clientId=YOUR_CLIENT_ID_HERE_REQUIRED
+app.clientSecret=YOUR_CLIENT_SECRET_HERE_IF_USING_APP_ONLY
+app.tenantId=YOUR_TENANT_ID_HERE_IF_USING_APP_ONLY
+app.authTenant=YOUR_AUTH_TENANT_ID_HERE_REQUIRED
+app.graphUserScopes=User.Read,Mail.Send,Calendars.ReadWrite

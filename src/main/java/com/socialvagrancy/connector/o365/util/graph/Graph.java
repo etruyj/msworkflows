@@ -10,7 +10,7 @@
 //
 //===================================================================
 
-package com.socialvagrancy.msworkflows.util.graph;
+package com.socialvagrancy.connector.o365.util.graph;
 
 import java.util.Arrays;
 import java.util.ArrayList;

@@ -5,7 +5,7 @@
 // 		Automation Workflows.
 //===================================================================
 
-package com.socialvagrancy.msworkflows.ui;
+package com.socialvagrancy.connector.o365.ui;
 
 public class MSWorkflows
 {
@@ -17,6 +17,10 @@ public class MSWorkflows
 
 			switch(aparser.get("command"))
 			{
+				case "check-availability":
+					System.out.println("Checking availability for [" + aparser.get("user") + "]...");
+					controller.checkAvailability(aparser.get("user"));
+					break;
 				case "create-meeting":
 					System.out.println("Creating meeting...");
 					controller.createMeeting(aparser.get("template"));
