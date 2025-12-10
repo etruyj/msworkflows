@@ -1,9 +1,9 @@
-# msworkflows
-This is a really simple interface to test interaction with MS Graph. The plan is to integrate it with other scripts to automate email and meeting invitations. As this is a simple POC at this point, a scanner is used to take input.
+# O365 Connector
+This is a simple interface to provide programatic access to Microsoft Office 365 via the MS Graph API/SDK. There are two entry points for the this script, shell and programatic. Shell access can be found in ui/O365Shell.java. Programatic access can be done through command/O365Controller.java.
 
-MainClass: com.socialvagrancy.connector.o365.ui.MSWorkflows
-
-Required: socialvagrancy.utils version 1.8.0 - can be downloaded from github and installed into Maven.
+Requirements:  
+    - [socialvagrancy.utils](https://github.com/etruyj/sv_utils) version 2.8.0   
+    - [Microsoft Entra Admin Center](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM) Admin Access
 
 ## Configuration
 
@@ -27,16 +27,19 @@ Before running the application, you need to configure OAuth authentication:
 --template: What template to use for the email/meeting.
 
 ## Templates:
-Templates are JSON objects that hold the basic format for the email.
+Templates are JSON objects that hold the basic format for the different objects.
 
-### Email Fields
-subject: String 
+### Email
+The email template has 4 different fields: to_recipients (List), subject, body, and variables. Any of the first three fields can have defined variables in the form of {VARIABLE}. Listing each of the variables without the curly braces in the variables section will have the script prompt for those values when executed from the shell. For example, if the to_recipients is [ "{to_user}" ], variables should include "to_user". This will inform the script to prompt for that value, which will then be replaced in the email body.
 
-to_recipient: Array<String> 
-  
-body: String 
-  
-variables: Array<String>
+```json
+{
+    "subject": "String",
+    "to_recipient": ["String"],
+    "body": "String",
+    "variables": ["String"]
+}
+```
 
 ### Meeting Fields
 subject: String 
