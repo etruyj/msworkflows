@@ -15,6 +15,9 @@ import com.socialvagrancy.utils.io.Logger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class O365Controller {
@@ -53,8 +56,7 @@ public class O365Controller {
 	// Commands
 	//=======================================
 
-	public void checkAvailability(String email)
-	{
+	public void checkAvailability(String email) {
 		try
 		{
 		}
@@ -78,7 +80,15 @@ public class O365Controller {
 		}
 	}
 
-	public void sendEmail(String template_path) throws Exception {
-	    SendEmail.fromTemplateWithPrompts(template_path, graph);
+	public void sendEmailWithPrompts(String template_path) throws Exception {
+	    // This function requires shell input. It'll read the template file
+        // for variables and prompt the user for the values.
+        SendEmail.fromTemplateWithPrompts(template_path, graph);
 	}
+
+    public void sendEmailWithoutPrompts(String template_path, Map<String, String> var_map) throws Exception {
+        // This function doesn't require user interaction and should be used
+        // as the function for programtic access to send emails.
+        SendEmail.fromTemplateWithoutPrompts(template_path, var_map, graph);
+    }
 }

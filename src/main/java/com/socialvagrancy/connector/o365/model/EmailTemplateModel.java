@@ -31,15 +31,15 @@ public class EmailTemplateModel
 	//=======================================
 	// Getters
 	//=======================================
-	
-	public ArrayList<String> toRecipients() { return to_recipient; }
-	public ArrayList<String> ccRecipients() { return cc_recipient; }
-	public ArrayList<String> bccRecipients() { return bcc_recipient; }
-	public String subject() { return subject; }
-	public String body() { return body; }
-	public ArrayList<String> attachments() { return attachments; }
-	public ArrayList<String> variables() { return variables; }
-	public int toRecipientCount() { return to_recipient.size(); }
+
+	public ArrayList<String> getToRecipients() { return to_recipient; }
+	public ArrayList<String> getCcRecipients() { return cc_recipient; }
+	public ArrayList<String> getBccRecipients() { return bcc_recipient; }
+	public String getSubject() { return subject; }
+	public String getBody() { return body; }
+	public ArrayList<String> getAttachments() { return attachments; }
+	public ArrayList<String> getVariables() { return variables; }
+	public int getToRecipientCount() { return to_recipient.size(); }
 
 	//=======================================
 	// Setters

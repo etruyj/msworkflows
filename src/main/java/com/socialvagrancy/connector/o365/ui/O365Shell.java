@@ -25,7 +25,7 @@ public class O365Shell {
 					break;
 				case "send-email":
 					System.out.println("Sending email...");
-					controller.sendEmail(aparser.get("template"));
+					controller.sendEmailWithPrompts(aparser.get("template"));
 					break;
 				default:
 					System.err.println("Invalid command selected [" + aparser.get("command") + "]. Please use -h/--help to see a list of valid commands.");
