@@ -1,17 +1,19 @@
 # O365 Connector
 This is a simple interface to provide programatic access to Microsoft Office 365 via the MS Graph API/SDK. There are two entry points for the this script, shell and programatic. Shell access can be found in ui/O365Shell.java. Programatic access can be done through command/O365Controller.java.
 
+This version of the code updates the send email functionality to streamline that process. The instructions in this version of the README will only relate to the email functionality.
+
 Requirements:  
     - [socialvagrancy.utils](https://github.com/etruyj/sv_utils) version 2.8.0   
     - [Microsoft Entra Admin Center](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade/quickStartType~/null/sourceType/Microsoft_AAD_IAM) Admin Access
 
 ## Configuration
 
-Before running the application, you need to configure OAuth authentication:
+Before running the application, you need to configure OAuth authentication. The script assumes it is being executed from within a directory structure, such as the bin/ directory of the script. Authentication with MS Graph is loaded from a files called oAuth.properties. The script expects to find that file in resources/ (../resources/ relative to the execution of the script). A sample oAuth.properties file is located in the src/main/resources/msworkflows/. A copy can be created in the ../resources directory and the information can be provided from your O365 administrator.
 
 1. Copy the example configuration file:
    ```bash
-   cp src/main/resources/msworkflows/oAuth.properties.example src/main/resources/msworkflows/oAuth.properties
+   cp src/main/resources/msworkflows/oAuth.properties.example ../resources/oAuth.properties
    ```
 
 2. Edit `oAuth.properties` and fill in your Azure AD application details:
@@ -20,6 +22,10 @@ Before running the application, you need to configure OAuth authentication:
    - `app.clientSecret` - Client secret (only if using app-only authentication)
    - `app.tenantId` - Tenant ID (only if using app-only authentication)
    - `app.graphUserScopes` - Comma-separated list of Microsoft Graph scopes
+
+## Authentication
+
+The script requires web authentication in order to receive a token from MS Graph. A URL and an auth code will be pasted to the shell. Copy that URL to a web browser and follow the prompts to enter the auth code. Once those steps are complete, the script have the ability to interact with the associated MS O365 account.
 
 ## Arguments:
 --command: The task to be performed [ create-meeting | send-email ] 
