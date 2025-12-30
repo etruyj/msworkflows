@@ -8,16 +8,17 @@
 package com.socialvagrancy.connector.o365.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EmailTemplateModel
 {
-	ArrayList<String> to_recipient;
-	ArrayList<String> cc_recipient;
-	ArrayList<String> bcc_recipient;
+	List<String> to_recipient;
+	List<String> cc_recipient;
+	List<String> bcc_recipient;
 	String subject;
 	String body;
-	ArrayList<String> attachments;
-	ArrayList<String> variables;
+	List<String> attachments;
+	List<String> variables;
 
 	public EmailTemplateModel()
 	{
@@ -32,13 +33,13 @@ public class EmailTemplateModel
 	// Getters
 	//=======================================
 
-	public ArrayList<String> getToRecipients() { return to_recipient; }
-	public ArrayList<String> getCcRecipients() { return cc_recipient; }
-	public ArrayList<String> getBccRecipients() { return bcc_recipient; }
+	public List<String> getToRecipients() { return to_recipient; }
+	public List<String> getCcRecipients() { return cc_recipient; }
+	public List<String> getBccRecipients() { return bcc_recipient; }
 	public String getSubject() { return subject; }
 	public String getBody() { return body; }
-	public ArrayList<String> getAttachments() { return attachments; }
-	public ArrayList<String> getVariables() { return variables; }
+	public List<String> getAttachments() { return attachments; }
+	public List<String> getVariables() { return variables; }
 	public int getToRecipientCount() { return to_recipient.size(); }
 
 	//=======================================
@@ -52,9 +53,9 @@ public class EmailTemplateModel
 	public void addVariable(String v) { variables.add(v); }
 	public void setBody(String b) { body = b; }
 	public void setSubject(String s) { subject = s; }
-	public void setToRecipients(ArrayList<String> r) { to_recipient = r; }
-	public void setCcRecipients(ArrayList<String> r) { cc_recipient = r; }
-	public void setBccRecipients(ArrayList<String> r) { bcc_recipient = r; }
+	public void setToRecipients(List<String> r) { to_recipient = r; }
+	public void setCcRecipients(List<String> r) { cc_recipient = r; }
+	public void setBccRecipients(List<String> r) { bcc_recipient = r; }
 	public void updateToRecipient(int index, String email) 
 	{ 
 		to_recipient.remove(index);

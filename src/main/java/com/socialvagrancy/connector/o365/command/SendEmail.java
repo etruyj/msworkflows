@@ -12,6 +12,7 @@
 package com.socialvagrancy.connector.o365.command;
 
 import com.socialvagrancy.connector.o365.model.EmailTemplateModel;
+import com.socialvagrancy.connector.o365.util.ReplaceVariables;
 import com.socialvagrancy.connector.o365.util.graph.Graph;
 import com.socialvagrancy.utils.io.FileManager;
 
@@ -37,10 +38,15 @@ public class SendEmail {
 		Gson gson = new Gson();
 		String template;
 		EmailTemplateModel email;
+		Scanner cin = new Scanner(System.in);
 
 	    template = FileManager.readFile(template_path);
 
 		email = gson.fromJson(template, EmailTemplateModel.class);
+
+		// Prompt for sender email address
+		System.out.print("Sender email address: ");
+		String senderEmail = cin.nextLine();
 
 		Map<String, String> var_map = userInputVariables(email.getVariables());
 
@@ -51,12 +57,12 @@ public class SendEmail {
 
 		if(email != null)
 		{
-			graph.sendEmail(email.getSubject(), email.getBody(), email.getToRecipients(), email.getCcRecipients(), email.getBccRecipients());
-	
+			graph.sendEmail(senderEmail, email.getSubject(), email.getBody(), email.getToRecipients(), email.getCcRecipients(), email.getBccRecipients());
+
 		}
 	}
 
-	public static void fromTemplateWithoutPrompts(String template_path, Map<String, String> var_map, Graph graph) throws Exception {
+	public static void fromTemplateWithoutPrompts(String senderEmail, String template_path, Map<String, String> var_map, Graph graph) throws Exception {
 		log.info("Composing email based on template: " + template_path);
 
 		Gson gson = new Gson();
@@ -73,9 +79,9 @@ public class SendEmail {
 		email.setBody(replaceVariables(email.getBody(), var_map));
 
 		if(email != null) {
-		    log.info("Sending email {} to {}", email.getSubject(), email.getToRecipients());
-            graph.sendEmail(email.getSubject(), email.getBody(), email.getToRecipients(), email.getCcRecipients(), email.getBccRecipients());
-		    log.info("Email {} was sent to {}", email.getSubject(), email.getToRecipients());
+		    log.info("Sending email {} to {} from {}", email.getSubject(), email.getToRecipients(), senderEmail);
+            graph.sendEmail(senderEmail, email.getSubject(), email.getBody(), email.getToRecipients(), email.getCcRecipients(), email.getBccRecipients());
+		    log.info("Email {} was sent to {} from {}", email.getSubject(), email.getToRecipients(), senderEmail);
         }
 	}
 
@@ -83,10 +89,10 @@ public class SendEmail {
 	// Private Functions
 	//=======================================
 	
-	private static ArrayList<String> replaceEmailAddresses(List<String> address_list, Map<String, String> var_map)	{
+	private static List<String> replaceEmailAddresses(List<String> address_list, Map<String, String> var_map)	{
 		// Build out the email list and replace them with variables.
 
-		ArrayList<String> email_list = new ArrayList<String>();
+		List<String> email_list = new ArrayList<String>();
 
 		for(int i=0; i<address_list.size(); i++) {
 			email_list.add(var_map.get(address_list.get(i).substring(1, address_list.get(i).length()-1)));
@@ -97,15 +103,16 @@ public class SendEmail {
 
 	private static String replaceVariables(String text, Map<String, String> var_map) {
 		for(HashMap.Entry<String, String> variable : var_map.entrySet()) {
+            
 			text = text.replace("{" + variable.getKey() + "}", variable.getValue());
 		}	
 
 		return text;
 	}
 	
-	private static HashMap<String, String> userInputVariables(ArrayList<String> var_list) {
-		HashMap<String, String> var_map = new HashMap<String, String>();
-		Scanner cin = new Scanner(System.in);
+	private static Map<String, String> userInputVariables(List<String> var_list) {
+	    Map<String, String> var_map = new HashMap<String, String>();
+        Scanner cin = new Scanner(System.in);
 		String choice;
 
 		for(int i=0; i<var_list.size(); i++) {

@@ -21,6 +21,9 @@ import java.util.function.Consumer;
 
 import com.azure.core.credential.AccessToken;
 import com.azure.core.credential.TokenRequestContext;
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.ClientCertificateCredential;
+import com.azure.identity.ClientCertificateCredentialBuilder;
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.identity.DeviceCodeCredential;
@@ -91,6 +94,64 @@ public class Graph {
 	User me = _userClient.me().buildRequest().get();
     }
     // </UserAuthConfigSnippet>
+
+    // <AppOnlyAuthConfigSnippet>
+    private TokenCredential _appCredential;
+    private GraphServiceClient<Request> _appClient;
+
+    public void initializeGraphForAppOnlyAuth(Properties properties) throws Exception {
+        // Ensure properties isn't null
+        if (properties == null) {
+            throw new Exception("Properties cannot be null");
+        }
+
+        _properties = properties;
+
+        final String clientId = properties.getProperty("app.clientId");
+        final String tenantId = properties.getProperty("app.tenantId");
+        final String clientSecret = properties.getProperty("app.clientSecret");
+        final String certificatePath = properties.getProperty("app.certificatePath");
+        final String certificatePassword = properties.getProperty("app.certificatePassword");
+
+        // Determine which authentication method to use based on available properties
+        if (certificatePath != null && !certificatePath.isEmpty()) {
+            // Use certificate-based authentication
+            System.out.println("Initializing with certificate authentication...");
+            ClientCertificateCredentialBuilder certBuilder = new ClientCertificateCredentialBuilder()
+                .clientId(clientId)
+                .tenantId(tenantId);
+
+            // Check if certificate is PFX or PEM based on file extension
+            if (certificatePath.toLowerCase().endsWith(".pfx") || certificatePath.toLowerCase().endsWith(".p12")) {
+                // PFX/PKCS12 certificate
+                certBuilder.pfxCertificate(certificatePath, certificatePassword != null ? certificatePassword : "");
+            } else {
+                // PEM certificate
+                certBuilder.pemCertificate(certificatePath);
+            }
+
+            _appCredential = certBuilder.build();
+        } else if (clientSecret != null && !clientSecret.isEmpty()) {
+            // Use client secret authentication
+            System.out.println("Initializing with client secret authentication...");
+            _appCredential = new ClientSecretCredentialBuilder()
+                .clientId(clientId)
+                .tenantId(tenantId)
+                .clientSecret(clientSecret)
+                .build();
+        } else {
+            throw new Exception("Either app.clientSecret or app.certificatePath must be configured in oAuth.properties");
+        }
+
+        final TokenCredentialAuthProvider authProvider =
+            new TokenCredentialAuthProvider(
+                List.of("https://graph.microsoft.com/.default"), _appCredential);
+
+        _appClient = GraphServiceClient.builder()
+            .authenticationProvider(authProvider)
+            .buildClient();
+    }
+    // </AppOnlyAuthConfigSnippet>
 
     //===========================================
     // Graph Functions
@@ -300,11 +361,11 @@ public class Graph {
             .post();
     }
 
-    public void sendEmail(String subject, String body, ArrayList<String> to_list, ArrayList<String> cc_list, ArrayList<String> bcc_list) throws Exception
+    public void sendEmail(String senderEmail, String subject, String body, List<String> to_list, List<String> cc_list, List<String> bcc_list) throws Exception
     {
-	    if(_userClient == null)
+	    if(_appClient == null)
 	    {
-		    throw new Exception("Graph has not been initialized for user auth");
+		    throw new Exception("Graph has not been initialized for app-only auth");
 	    }
 
 	    //===================================
@@ -377,9 +438,9 @@ public class Graph {
 	    //===================================
 	    // Send Mail
 	    //===================================
-	    
-	    
-	    _userClient.me()
+
+
+	    _appClient.users(senderEmail)
 		.sendMail(UserSendMailParameterSet
 				.newBuilder()
 				.withMessage(message)
@@ -391,35 +452,15 @@ public class Graph {
     // </SendMailSnippet>
 
     // <AppOnyAuthConfigSnippet>
-    private ClientSecretCredential _clientSecretCredential;
-    private GraphServiceClient<Request> _appClient;
-
     private void ensureGraphForAppOnlyAuth() throws Exception {
         // Ensure _properties isn't null
         if (_properties == null) {
             throw new Exception("Properties cannot be null");
         }
 
-        if (_clientSecretCredential == null) {
-            final String clientId = _properties.getProperty("app.clientId");
-            final String tenantId = _properties.getProperty("app.tenantId");
-            final String clientSecret = _properties.getProperty("app.clientSecret");
-
-            _clientSecretCredential = new ClientSecretCredentialBuilder()
-                .clientId(clientId)
-                .tenantId(tenantId)
-                .clientSecret(clientSecret)
-                .build();
-        }
-
-        if (_appClient == null) {
-            final TokenCredentialAuthProvider authProvider =
-                new TokenCredentialAuthProvider(
-                    List.of("https://graph.microsoft.com/.default"), _clientSecretCredential);
-
-            _appClient = GraphServiceClient.builder()
-                .authenticationProvider(authProvider)
-                .buildClient();
+        if (_appCredential == null) {
+            // Call the public initialization method if not already initialized
+            initializeGraphForAppOnlyAuth(_properties);
         }
     }
     // </AppOnyAuthConfigSnippet>
