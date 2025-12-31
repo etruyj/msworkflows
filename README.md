@@ -35,6 +35,19 @@ The script requires web authentication in order to receive a token from MS Graph
 ## Templates:
 Templates are JSON objects that hold the basic format for the different objects.
 
+### Variables
+Variables in this script can have two formats. A single variable can be denoted by `{var_name}` in the text and matched off a single variable text. A potential list of variables can be denoted in the format of `{@loop:var_name}TEXT{item}TEXT{@endloop}`. This replaces field inside the {item} bracket with listed values while preserving the text fields. For example: A template of 
+
+`"<html><body>{user} likes to eat <ul> {@loop:likes} <li>{item}</li>\n {@endloop} </ul></body></html>"` 
+
+with a variable map of `"user": ["mary"], "likes": ["apple", "banana"]`
+
+would results in the output 
+
+`"<html><body>mary likes to eat <ul> <li>apple</li> \n <li>banana</li> \n </ul></body></html>"`
+
+For the programatic functionality, the var_map passed to the functions will expect all variables to be in Map<String, List<String>> format, where the key is the variable name and the list is potential contents. 
+
 ### Email
 The email template has 4 different fields: to_recipients (List), subject, body, and variables. Any of the first three fields can have defined variables in the form of {VARIABLE}. Listing each of the variables without the curly braces in the variables section will have the script prompt for those values when executed from the shell. For example, if the to_recipients is [ "{to_user}" ], variables should include "to_user". This will inform the script to prompt for that value, which will then be replaced in the email body.
 

@@ -12,7 +12,7 @@ import com.socialvagrancy.connector.o365.command.O365Controller;
 public class O365Shell {
 	public O365Shell(ArgParser aparser) {
 		try	{
-			O365Controller controller = new O365Controller("../log/msworkflows.log", 1, 102400, 3, "oAuth.properties");
+			O365Controller controller = new O365Controller("../log/msworkflows.log", 1, 102400, 3, "../resources/oAuth.properties");
 
 			switch(aparser.get("command")) {
 				case "check-availability":

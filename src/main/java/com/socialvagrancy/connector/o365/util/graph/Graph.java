@@ -29,7 +29,7 @@ import com.azure.identity.ClientSecretCredentialBuilder;
 import com.azure.identity.DeviceCodeCredential;
 import com.azure.identity.DeviceCodeCredentialBuilder;
 import com.azure.identity.DeviceCodeInfo;
-import com.microsoft.graph.authentication.TokenCredentialAuthProvider;
+import com.microsoft.graph.core.authentication.AzureIdentityAuthenticationProvider;
 import com.microsoft.graph.models.Attendee;
 import com.microsoft.graph.models.AttendeeType;
 import com.microsoft.graph.models.BodyType;
@@ -42,21 +42,19 @@ import com.microsoft.graph.models.Location;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.Recipient;
 import com.microsoft.graph.models.User;
-import com.microsoft.graph.models.UserSendMailParameterSet;
-import com.microsoft.graph.options.HeaderOption;
-import com.microsoft.graph.options.Option;
-import com.microsoft.graph.requests.GraphServiceClient;
-import com.microsoft.graph.requests.MessageCollectionPage;
-import com.microsoft.graph.requests.UserCollectionPage;
-
-import okhttp3.Request;
+import com.microsoft.graph.serviceclient.GraphServiceClient;
+import com.microsoft.graph.users.item.messages.MessagesRequestBuilder;
+import com.microsoft.graph.users.item.sendmail.SendMailPostRequestBody;
+import com.microsoft.graph.users.UsersRequestBuilder;
+import com.microsoft.kiota.RequestOption;
+import com.microsoft.kiota.RequestInformation;
 // </ImportSnippet>
 
 public class Graph {
     // <UserAuthConfigSnippet>
     private Properties _properties;
     private DeviceCodeCredential _deviceCodeCredential;
-    private GraphServiceClient<Request> _userClient;
+    private GraphServiceClient _userClient;
 
     //===========================================
     // Constructor & Initialization
@@ -84,20 +82,18 @@ public class Graph {
             .challengeConsumer(challenge)
             .build();
 
-        final TokenCredentialAuthProvider authProvider =
-            new TokenCredentialAuthProvider(graphUserScopes, _deviceCodeCredential);
+        final AzureIdentityAuthenticationProvider authProvider =
+            new AzureIdentityAuthenticationProvider(_deviceCodeCredential, null, graphUserScopes.toArray(new String[0]));
 
-        _userClient = GraphServiceClient.builder()
-            .authenticationProvider(authProvider)
-            .buildClient();
+        _userClient = new GraphServiceClient(authProvider);
 
-	User me = _userClient.me().buildRequest().get();
+	User me = _userClient.me().get();
     }
     // </UserAuthConfigSnippet>
 
     // <AppOnlyAuthConfigSnippet>
     private TokenCredential _appCredential;
-    private GraphServiceClient<Request> _appClient;
+    private GraphServiceClient _appClient;
 
     public void initializeGraphForAppOnlyAuth(Properties properties) throws Exception {
         // Ensure properties isn't null
@@ -143,13 +139,10 @@ public class Graph {
             throw new Exception("Either app.clientSecret or app.certificatePath must be configured in oAuth.properties");
         }
 
-        final TokenCredentialAuthProvider authProvider =
-            new TokenCredentialAuthProvider(
-                List.of("https://graph.microsoft.com/.default"), _appCredential);
+        final AzureIdentityAuthenticationProvider authProvider =
+            new AzureIdentityAuthenticationProvider(_appCredential, null, "https://graph.microsoft.com/.default");
 
-        _appClient = GraphServiceClient.builder()
-            .authenticationProvider(authProvider)
-            .buildClient();
+        _appClient = new GraphServiceClient(authProvider);
     }
     // </AppOnlyAuthConfigSnippet>
 
@@ -159,32 +152,29 @@ public class Graph {
 
     public void createEvent(String subject, String invite_body, String start_time, String end_time, String timezone, String meeting_room, ArrayList<String> attendees)
     {
-	    LinkedList<Option> requestOptions = new LinkedList<Option>();
-	    requestOptions.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timezone + "\""));
-
 	    //===================================
 	    // Event Info
 	    //===================================
 	    Event event = new Event();
-	    event.subject = subject;
-	    
+	    event.setSubject(subject);
+
 	    ItemBody body = new ItemBody();
-	    body.contentType = BodyType.HTML;
-	    body.content = invite_body;
+	    body.setContentType(BodyType.Html);
+	    body.setContent(invite_body);
 
 	    DateTimeTimeZone start = new DateTimeTimeZone();
-	    start.dateTime =  start_time;
-	    start.timeZone = timezone;
-	    event.start = start;
+	    start.setDateTime(start_time);
+	    start.setTimeZone(timezone);
+	    event.setStart(start);
 
 	    DateTimeTimeZone end = new DateTimeTimeZone();
-	    end.dateTime = end_time;
-	    end.timeZone = timezone;
-	    event.end = end;
+	    end.setDateTime(end_time);
+	    end.setTimeZone(timezone);
+	    event.setEnd(end);
 
 	    Location location = new Location();
-	    location.displayName = meeting_room;
-	    event.location = location;
+	    location.setDisplayName(meeting_room);
+	    event.setLocation(location);
 
 	    LinkedList<Attendee> attendee_list = new LinkedList<Attendee>();
 	    Attendee attendee;
@@ -194,55 +184,51 @@ public class Graph {
 	    {
 		    attendee = new Attendee();
 		    email_address = new EmailAddress();
-		    email_address.address = attendees.get(i);
-		    attendee.emailAddress = email_address;
-		    attendee.type = AttendeeType.REQUIRED;
+		    email_address.setAddress(attendees.get(i));
+		    attendee.setEmailAddress(email_address);
+		    attendee.setType(AttendeeType.Required);
 		    attendee_list.add(attendee);
 	    }
 
-	    event.attendees = attendee_list;
+	    event.setAttendees(attendee_list);
 
-	    event.allowNewTimeProposals = true;
+	    event.setAllowNewTimeProposals(true);
 
 	    //===================================
 	    // Create Event On Calendar
 	    //===================================
 
 	    _userClient.me().events()
-		    .buildRequest(requestOptions)
 		    .post(event);
     }
 
     public void createEventMessage(String subject, String invite_body, String start_time, String end_time, String timezone, String meeting_room, ArrayList<String> attendees)
     {
-	    LinkedList<Option> requestOptions = new LinkedList<Option>();
-	    requestOptions.add(new HeaderOption("Prefer", "outlook.timezone=\"" + timezone + "\""));
-
 	    //===================================
 	    // Event Info
 	    //===================================
 	    Event event = new Event();
-	    event.subject = subject;
-	    
+	    event.setSubject(subject);
+
 	    ItemBody body = new ItemBody();
-	    body.contentType = BodyType.HTML;
+	    body.setContentType(BodyType.Html);
 	    System.err.println("BODY: " + invite_body);
-	    body.content = invite_body;
-	    event.body = body;
+	    body.setContent(invite_body);
+	    event.setBody(body);
 
 	    DateTimeTimeZone start = new DateTimeTimeZone();
-	    start.dateTime =  start_time;
-	    start.timeZone = timezone;
-	    event.start = start;
+	    start.setDateTime(start_time);
+	    start.setTimeZone(timezone);
+	    event.setStart(start);
 
 	    DateTimeTimeZone end = new DateTimeTimeZone();
-	    end.dateTime = end_time;
-	    end.timeZone = timezone;
-	    event.end = end;
+	    end.setDateTime(end_time);
+	    end.setTimeZone(timezone);
+	    event.setEnd(end);
 
 	    Location location = new Location();
-	    location.displayName = meeting_room;
-	    event.location = location;
+	    location.setDisplayName(meeting_room);
+	    event.setLocation(location);
 
 	    LinkedList<Attendee> attendee_list = new LinkedList<Attendee>();
 	    Attendee attendee;
@@ -252,22 +238,21 @@ public class Graph {
 	    {
 		    attendee = new Attendee();
 		    email_address = new EmailAddress();
-		    email_address.address = attendees.get(i);
-		    attendee.emailAddress = email_address;
-		    attendee.type = AttendeeType.REQUIRED;
+		    email_address.setAddress(attendees.get(i));
+		    attendee.setEmailAddress(email_address);
+		    attendee.setType(AttendeeType.Required);
 		    attendee_list.add(attendee);
 	    }
 
-	    event.attendees = attendee_list;
+	    event.setAttendees(attendee_list);
 
-	    event.allowNewTimeProposals = true;
+	    event.setAllowNewTimeProposals(true);
 
 	    //===================================
 	    // Send Event Invite
 	    //===================================
 
 	    _userClient.me().events()
-		    .buildRequest(requestOptions)
 		    .post(event);
     }
 
@@ -296,8 +281,6 @@ public class Graph {
         }
 
         return _userClient.me()
-            .buildRequest()
-            .select("displayName,mail,userPrincipalName")
             .get();
     }
     // </GetUserSnippet>
@@ -310,25 +293,20 @@ public class Graph {
 
 		_userClient.me()
 			.events()
-			.buildRequest()
-			.select("subject,body,organizer,attendees")
 			.get();
 	}
 
     // <GetInboxSnippet>
-    public MessageCollectionPage getInbox() throws Exception {
+    public void getInbox() throws Exception {
         // Ensure client isn't null
         if (_userClient == null) {
             throw new Exception("Graph has not been initialized for user auth");
         }
 
-        return _userClient.me()
-            .mailFolders("inbox")
+        _userClient.me()
+            .mailFolders()
+            .byMailFolderId("inbox")
             .messages()
-            .buildRequest()
-            .select("from,isRead,receivedDateTime,subject")
-            .top(25)
-            .orderBy("receivedDateTime DESC")
             .get();
     }
     // </GetInboxSnippet>
@@ -342,23 +320,26 @@ public class Graph {
 
         // Create a new message
         final Message message = new Message();
-        message.subject = subject;
-        message.body = new ItemBody();
-        message.body.content = body;
-        message.body.contentType = BodyType.TEXT;
+        message.setSubject(subject);
+        ItemBody messageBody = new ItemBody();
+        messageBody.setContent(body);
+        messageBody.setContentType(BodyType.Text);
+        message.setBody(messageBody);
 
         final Recipient toRecipient = new Recipient();
-        toRecipient.emailAddress = new EmailAddress();
-        toRecipient.emailAddress.address = recipient;
-        message.toRecipients = List.of(toRecipient);
+        EmailAddress recipientAddress = new EmailAddress();
+        recipientAddress.setAddress(recipient);
+        toRecipient.setEmailAddress(recipientAddress);
+        message.setToRecipients(List.of(toRecipient));
 
         // Send the message
+        SendMailPostRequestBody requestBody = new SendMailPostRequestBody();
+        requestBody.setMessage(message);
+        requestBody.setSaveToSentItems(false);
+
         _userClient.me()
-            .sendMail(UserSendMailParameterSet.newBuilder()
-                .withMessage(message)
-                .build())
-            .buildRequest()
-            .post();
+            .sendMail()
+            .post(requestBody);
     }
 
     public void sendEmail(String senderEmail, String subject, String body, List<String> to_list, List<String> cc_list, List<String> bcc_list) throws Exception
@@ -372,11 +353,12 @@ public class Graph {
 	    // Message Body
 	    //===================================
 	    Message message = new Message();
-	    message.subject = subject;
-	    
-	    message.body = new ItemBody();
-	    message.body.content = body;
-	    message.body.contentType = BodyType.TEXT;
+	    message.setSubject(subject);
+
+	    ItemBody messageBody = new ItemBody();
+	    messageBody.setContent(body);
+	    messageBody.setContentType(BodyType.Text);
+	    message.setBody(messageBody);
 
 	    //===================================
 	    // Message Headers
@@ -391,29 +373,29 @@ public class Graph {
 	    {
 	    	recipient = new Recipient();
 		email_address = new EmailAddress();
-		email_address.address = to_list.get(i);
-		recipient.emailAddress = email_address;
+		email_address.setAddress(to_list.get(i));
+		recipient.setEmailAddress(email_address);
 		to_recipient_list.add(recipient);
 
 	    }
 
-	    message.toRecipients = to_recipient_list;
+	    message.setToRecipients(to_recipient_list);
 
 	    //===================================
 	    // CC Recipients
 	    //===================================
 	    LinkedList<Recipient> cc_recipient_list = new LinkedList<Recipient>();
-	   
+
 	    for(int i=0; i<cc_list.size(); i++)
 	    {
 		    recipient = new Recipient();
 		    email_address = new EmailAddress();
-		    email_address.address = cc_list.get(i);
-		    recipient.emailAddress = email_address;
+		    email_address.setAddress(cc_list.get(i));
+		    recipient.setEmailAddress(email_address);
 		    cc_recipient_list.add(recipient);
-	    } 
+	    }
 
-	    message.ccRecipients = cc_recipient_list;
+	    message.setCcRecipients(cc_recipient_list);
 
 	    //===================================
 	    // BCC Recipients
@@ -424,30 +406,29 @@ public class Graph {
 	    {
 		    recipient = new Recipient();
 		    email_address = new EmailAddress();
-		    email_address.address = bcc_list.get(i);
-		    recipient.emailAddress = email_address;
+		    email_address.setAddress(bcc_list.get(i));
+		    recipient.setEmailAddress(email_address);
 		    bcc_recipient_list.add(recipient);
 	    }
 
-	    message.bccRecipients = bcc_recipient_list;
+	    message.setBccRecipients(bcc_recipient_list);
 
 	    //===================================
 	    // Attachments
 	    //===================================
-	    
+
 	    //===================================
 	    // Send Mail
 	    //===================================
 
+	    SendMailPostRequestBody requestBody = new SendMailPostRequestBody();
+	    requestBody.setMessage(message);
+	    requestBody.setSaveToSentItems(true);
 
-	    _appClient.users(senderEmail)
-		.sendMail(UserSendMailParameterSet
-				.newBuilder()
-				.withMessage(message)
-				.withSaveToSentItems(true)
-				.build())
-		.buildRequest()
-		.post();
+	    _appClient.users()
+		.byUserId(senderEmail)
+		.sendMail()
+		.post(requestBody);
     }
     // </SendMailSnippet>
 
@@ -466,14 +447,10 @@ public class Graph {
     // </AppOnyAuthConfigSnippet>
 
     // <GetUsersSnippet>
-    public UserCollectionPage getUsers() throws Exception {
+    public void getUsers() throws Exception {
         ensureGraphForAppOnlyAuth();
 
-        return _appClient.users()
-            .buildRequest()
-            .select("displayName,id,mail")
-            .top(25)
-            .orderBy("displayName")
+        _appClient.users()
             .get();
     }
     // </GetUsersSnippet>

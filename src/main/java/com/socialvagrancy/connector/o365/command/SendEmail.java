@@ -62,7 +62,7 @@ public class SendEmail {
 		}
 	}
 
-	public static void fromTemplateWithoutPrompts(String senderEmail, String template_path, Map<String, String> var_map, Graph graph) throws Exception {
+	public static void fromTemplateWithoutPrompts(String senderEmail, String template_path, Map<String, List<String>> var_map, Graph graph) throws Exception {
 		log.info("Composing email based on template: " + template_path);
 
 		Gson gson = new Gson();
@@ -73,10 +73,10 @@ public class SendEmail {
 
 		email = gson.fromJson(template, EmailTemplateModel.class);
 
-		email.setToRecipients(replaceEmailAddresses(email.getToRecipients(), var_map));
-		email.setCcRecipients(replaceEmailAddresses(email.getCcRecipients(), var_map));
-		email.setBccRecipients(replaceEmailAddresses(email.getBccRecipients(), var_map));
-		email.setBody(replaceVariables(email.getBody(), var_map));
+		email.setToRecipients(ReplaceVariables.processTextToList(email.getToRecipients(), var_map));
+		email.setCcRecipients(ReplaceVariables.processTextToList(email.getCcRecipients(), var_map));
+		email.setBccRecipients(ReplaceVariables.processTextToList(email.getBccRecipients(), var_map));
+		email.setBody(ReplaceVariables.processText(email.getBody(), var_map));
 
 		if(email != null) {
 		    log.info("Sending email {} to {} from {}", email.getSubject(), email.getToRecipients(), senderEmail);

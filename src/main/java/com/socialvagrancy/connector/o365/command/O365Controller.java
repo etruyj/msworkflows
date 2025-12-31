@@ -34,22 +34,21 @@ public class O365Controller {
 		graph = new Graph();
 		
 		try {
-			oAuthProperties.load(new FileInputStream("../resources/" + authentication_file));
+			oAuthProperties.load(new FileInputStream(authentication_file));
 		} catch(IOException e) {
 			log.error(e.getMessage());
 			throw new Exception("Unable to load OAuth configuration. Verify required information is listed in the " + authentication_file + ".");
 		}
 
 		try	{
-			graph.initializeGraphForUserAuth(oAuthProperties,
-					challenge -> System.out.println(challenge.getMessage()));
+			graph.initializeGraphForAppOnlyAuth(oAuthProperties);
 		} catch(Exception e) {
 			log.error("Error initializing MS Graph.");
 			log.error(e.getMessage());
 			throw new Exception("Unable to connect to MS Office API.");
 		}
 
-		log.debug("Successfully connected to MS Graph");
+		log.debug("Successfully connected to MS Graph (app-only auth)");
 	}
 
 	//=======================================
@@ -86,9 +85,9 @@ public class O365Controller {
         SendEmail.fromTemplateWithPrompts(template_path, graph);
 	}
 
-    public void sendEmailWithoutPrompts(String template_path, Map<String, String> var_map) throws Exception {
+    public void sendEmailWithoutPrompts(String senderEmail, String template_path, Map<String, List<String>> var_map) throws Exception {
         // This function doesn't require user interaction and should be used
         // as the function for programtic access to send emails.
-        SendEmail.fromTemplateWithoutPrompts(template_path, var_map, graph);
+        SendEmail.fromTemplateWithoutPrompts(senderEmail, template_path, var_map, graph);
     }
 }
