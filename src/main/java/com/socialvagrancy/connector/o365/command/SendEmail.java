@@ -48,18 +48,19 @@ public class SendEmail {
 		System.out.print("Sender email address: ");
 		String senderEmail = cin.nextLine();
 
-		Map<String, String> var_map = userInputVariables(email.getVariables());
+		Map<String, List<String>> var_map = userInputVariablesAsList(email.getVariables());
 
-		email.setToRecipients(replaceEmailAddresses(email.getToRecipients(), var_map));
-		email.setCcRecipients(replaceEmailAddresses(email.getCcRecipients(), var_map));
-		email.setBccRecipients(replaceEmailAddresses(email.getBccRecipients(), var_map));
-		email.setBody(replaceVariables(email.getBody(), var_map));
+		email.setToRecipients(ReplaceVariables.processTextToList(email.getToRecipients(), var_map));
+		email.setCcRecipients(ReplaceVariables.processTextToList(email.getCcRecipients(), var_map));
+		email.setBccRecipients(ReplaceVariables.processTextToList(email.getBccRecipients(), var_map));
+		email.setBody(ReplaceVariables.processText(email.getBody(), var_map));
 
 		if(email != null)
 		{
 			graph.sendEmail(senderEmail, email.getSubject(), email.getBody(), email.getToRecipients(), email.getCcRecipients(), email.getBccRecipients());
 
-		}
+		    log.info("Successfully sent email.");
+        }
 	}
 
 	public static void fromTemplateWithoutPrompts(String senderEmail, String template_path, Map<String, List<String>> var_map, Graph graph) throws Exception {
@@ -88,40 +89,30 @@ public class SendEmail {
 	//=======================================
 	// Private Functions
 	//=======================================
-	
-	private static List<String> replaceEmailAddresses(List<String> address_list, Map<String, String> var_map)	{
-		// Build out the email list and replace them with variables.
 
-		List<String> email_list = new ArrayList<String>();
-
-		for(int i=0; i<address_list.size(); i++) {
-			email_list.add(var_map.get(address_list.get(i).substring(1, address_list.get(i).length()-1)));
-		}
-
-		return email_list;
-	}
-
-	private static String replaceVariables(String text, Map<String, String> var_map) {
-		for(HashMap.Entry<String, String> variable : var_map.entrySet()) {
-            
-			text = text.replace("{" + variable.getKey() + "}", variable.getValue());
-		}	
-
-		return text;
-	}
-	
-	private static Map<String, String> userInputVariables(List<String> var_list) {
-	    Map<String, String> var_map = new HashMap<String, String>();
+	private static Map<String, List<String>> userInputVariablesAsList(List<String> var_list) {
+	    Map<String, List<String>> var_map = new HashMap<String, List<String>>();
         Scanner cin = new Scanner(System.in);
 		String choice;
 
 		for(int i=0; i<var_list.size(); i++) {
-			System.out.print(var_list.get(i) + ": ");
+			System.out.print(var_list.get(i) + " (comma-separated for lists): ");
 			choice = cin.nextLine();
 
-			var_map.put(var_list.get(i), choice);
+			// Split by comma to support list values
+			List<String> values = new ArrayList<String>();
+			if(choice.contains(",")) {
+				String[] parts = choice.split(",");
+				for(String part : parts) {
+					values.add(part.trim());
+				}
+			} else {
+				values.add(choice);
+			}
+
+			var_map.put(var_list.get(i), values);
 		}
 
 		return var_map;
-	}	
+	}
 }

@@ -323,7 +323,7 @@ public class Graph {
         message.setSubject(subject);
         ItemBody messageBody = new ItemBody();
         messageBody.setContent(body);
-        messageBody.setContentType(BodyType.Text);
+        messageBody.setContentType(BodyType.Html);
         message.setBody(messageBody);
 
         final Recipient toRecipient = new Recipient();
@@ -357,7 +357,7 @@ public class Graph {
 
 	    ItemBody messageBody = new ItemBody();
 	    messageBody.setContent(body);
-	    messageBody.setContentType(BodyType.Text);
+	    messageBody.setContentType(BodyType.Html);
 	    message.setBody(messageBody);
 
 	    //===================================

@@ -24,6 +24,29 @@ public class O365Controller {
 	private Logger log;
 	private Graph graph;
 
+    public O365Controller(String authentication_file) throws Exception {
+        final Properties oAuthProperties = new Properties();
+        graph = new Graph();
+		
+        try {
+			oAuthProperties.load(new FileInputStream(authentication_file));
+		} catch(IOException e) {
+			log.error(e.getMessage());
+			throw new Exception("Unable to load OAuth configuration. Verify required information is listed in the " + authentication_file + ".");
+		}
+
+		try	{
+			graph.initializeGraphForAppOnlyAuth(oAuthProperties);
+		} catch(Exception e) {
+			log.error("Error initializing MS Graph.");
+			log.error(e.getMessage());
+			throw new Exception("Unable to connect to MS Office API.");
+		}
+
+		log.debug("Successfully connected to MS Graph (app-only auth)");
+    }
+
+    @Deprecated
 	public O365Controller(String log_location, int log_level, int log_size, int log_count, String authentication_file) throws Exception
 	{
 		log = new Logger(log_location, log_size, log_count, log_level);
